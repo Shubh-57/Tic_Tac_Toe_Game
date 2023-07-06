@@ -1,6 +1,13 @@
 # Tic_Tac_Toe_Game
 
-This repository contains a C++ program of the classic TicTacToe game. The game provides option to choose between two modes -> Computer mode or 2-player mode. 
-In 2-player mode the two players take turns marking their moves on a 3x3 grid until a player wins or the game ends in a draw. 
-In computer mode the player plays against the computer, the computer randomly chooses its next move. The code also handles invalid position entries, by giving repeated chance till the player gives a valid position. 
-After the match ends, the player gets option to replay till he/she decides to quit the game. 
+Description :
+This repository contains a C++ program of the classic TicTacToe.
+
+Features :
+1. The program has two modes -> computer mode and 2-players mode.
+
+2. The program provides option to play repeatedly till he/she decides to quit the game.
+
+3. In Computer mode, the program utilizes mini-max algorithm to get the optimal move for computer, therfore the player can never win against the computer.
+
+4. The code also handles invalid position entries, by giving repeated chance to the player till he/she gives a valid position.
