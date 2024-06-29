@@ -1,4 +1,5 @@
-#include<iostream>
+#include <iostream>
+#include <cstdlib>
 #include <limits.h>
 using namespace std;
 
@@ -56,11 +57,17 @@ int isGameOver(char board[][3],char val){
 }
 
 // to get the score
-int evaluate(char board[][3]){
+int evaluate(char board[][3], int level){
     int check_x = isGameOver(board,'X');
     int check_o = isGameOver(board,'O');
     if(check_o == 1){
-        return 1;
+        int rand_num = rand() % 10;
+        switch(level) {
+            case 1: // Easy
+                return (rand_num < 5) ? 1 : -2;
+            case 2: // Hard
+                return (rand_num < 9) ? 1 : -2;
+        }
     }
     else if(check_x == 1){
         return -1;
@@ -73,10 +80,10 @@ int evaluate(char board[][3]){
     }
 }
 
-// miniMax algorithm
-int miniMax(char board[][3], bool isComp){
+// Mini-Max algorithm
+int miniMax(char board[][3], int level, bool isComp){
     // base case (match completed)
-    int score = evaluate(board);
+    int score = evaluate(board, level);
     if(score != 2){
         return score;
     }
@@ -84,11 +91,12 @@ int miniMax(char board[][3], bool isComp){
     // computer's turn
     if(isComp){
         int bestScore = INT_MIN;
+        bool immediate_win = false;
         for(int i=0;i<3;i++){
             for(int j=0;j<3;j++){
                 if(board[i][j] == ' '){
                     board[i][j] = 'O';
-                    int currentScore = miniMax(board,false);
+                    int currentScore = miniMax(board, level, false);
                     bestScore = max(currentScore,bestScore);
                     board[i][j] = ' ';
                 }
@@ -104,7 +112,7 @@ int miniMax(char board[][3], bool isComp){
             for(int j=0;j<3;j++){
                 if(board[i][j] == ' '){
                     board[i][j] = 'X';
-                    int currentScore = miniMax(board,true);
+                    int currentScore = miniMax(board, level, true);
                     bestScore = min(currentScore,bestScore);
                     board[i][j] = ' ';
                 }
@@ -115,14 +123,21 @@ int miniMax(char board[][3], bool isComp){
 }
 
 // to get the optimal move
-pair<int,int> optimalMove(char board[][3]){
+pair<int,int> optimalMove(char board[][3], int level){
     int bestScore = INT_MIN;
     pair<int,int> bestMove;
     for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
             if(board[i][j] == ' '){
                 board[i][j] = 'O';
-                int currentScore = miniMax(board,false);
+
+                // Check for Immediate/Obvious winning move
+                if(isGameOver(board, 'O') == 1){
+                    board[i][j] = ' ';
+                    return make_pair(i, j);
+                }
+
+                int currentScore = miniMax(board, level, false);
                 if(currentScore > bestScore){
                     bestScore = currentScore;
                     bestMove.first = i;
@@ -142,11 +157,14 @@ int main()
     cout<<"   |   |\n---|---|---\n   |   |\n---|---|---\n   |   |"<<endl<<endl;
 
     int mode;
-    cout<<"Enter 1 for computer mode or 2 for 2 player mode : ";
+    cout<<"Enter 1 for computer mode and 2 for 2 player mode : ";
     cin>>mode;
 
     // computer mode
     if(mode == 1){
+        int level;
+        cout<<"Enter 1 for Easy level and 2 for Hard level : ";
+        cin>>level;
         cout<<"You : X"<<endl;
         cout<<"Computer : O"<<endl;
         while(true) {
@@ -181,6 +199,10 @@ int main()
                     // Reinitializing all the positions with ' '
                     empty_board(board);
                     cout<<endl<<endl<<"   |   |\n---|---|---\n   |   |\n---|---|---\n   |   |"<<endl<<endl;
+                    cout<<"Enter 1 for Easy level and 2 for Hard level : ";
+                    cin>>level;
+                    cout<<"You : X"<<endl;
+                    cout<<"Computer : O"<<endl;
                     continue;
                 }
             }
@@ -198,12 +220,16 @@ int main()
                     // Reinitializing all the positions with ' '
                     empty_board(board);
                     cout<<endl<<endl<<"   |   |\n---|---|---\n   |   |\n---|---|---\n   |   |"<<endl<<endl;
+                    cout<<"Enter 1 for Easy level and 2 for Hard level : ";
+                    cin>>level;
+                    cout<<"You : X"<<endl;
+                    cout<<"Computer : O"<<endl;
                     continue;
                 }
             }
 
             pair<int,int> bestMove;
-            bestMove = optimalMove(board);
+            bestMove = optimalMove(board, level);
             board[bestMove.first][bestMove.second] = 'O';
 
             cout<<"Opponent's Turn : "<<bestMove.first<<" "<<bestMove.second<<endl;
@@ -224,6 +250,10 @@ int main()
                     // Reinitializing all the positions with ' '
                     empty_board(board);
                     cout<<endl<<endl<<"   |   |\n---|---|---\n   |   |\n---|---|---\n   |   |"<<endl<<endl;
+                    cout<<"Enter 1 for Easy level and 2 for Hard level : ";
+                    cin>>level;
+                    cout<<"You : X"<<endl;
+                    cout<<"Computer : O"<<endl;
                     continue;
                 }
             }
@@ -257,7 +287,7 @@ int main()
             if (decision == 1){
                 cout<<"Player 1 Wins !!"<<endl<<endl;
                 cout<<"Want to Play Another Round ?"<<endl;
-                cout<<"Enter 1 for YES or 0 for NO : ";
+                cout<<"Enter 1 for YES and 0 for NO : ";
                 cin>>choice;
                 if (choice==0){
                     break;
@@ -306,7 +336,7 @@ int main()
             if (isGameOver(board,'O') == 1){
                 cout<<"Player 2 Wins !!"<<endl<<endl;
                 cout<<"Want to Play Another Round ?"<<endl;
-                cout<<"Enter 1 for YES or 0 for NO : ";
+                cout<<"Enter 1 for YES and 0 for NO : ";
                 cin>>choice;
                 if (choice==0){
                     break;
